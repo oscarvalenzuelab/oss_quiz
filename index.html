@@ -48,7 +48,7 @@
       const userAnswers = new Array(questions.length).fill(null);
 
       // Replace this with your real deployed Apps Script Web App URL
-      const submissionURL = "https://script.google.com/macros/s/AKfycby-QHZb8jnOuhABIu9CWLZDxWdRi2bY15X1a0pySb4vXimMd9zAU36T2oBeSwBi5tPQ/exec";
+      const submissionURL = "https://script.google.com/macros/s/AKfycbwtZsZYD83ZqowYy6GhJSRXJnjfrapirFnKDOEzO_rQI5rQo_ceL9X6YGUGutGAiU3S/exec";
 
       function generateUserId() {
         return "User-" + Math.random().toString(36).substr(2, 6);
@@ -141,7 +141,7 @@
       }
 
       function sendSubmission(user, score, total, answers) {
-		  alert({ user, score, total, answers })
+		  alert(user, score, total, answers)
         fetch(submissionURL, {
           method: "POST",
           mode: "no-cors",
