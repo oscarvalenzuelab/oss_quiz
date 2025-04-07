@@ -46,6 +46,10 @@
 
     <div id="result" class="mt-5"></div>
 
+    <div class="text-center mt-4">
+      <button class="btn btn-warning" onclick="sendTestSubmission()">📡 Send Test Data</button>
+    </div>
+
     <script src="questions.js"></script>
     <script>
       const quizContainer = document.getElementById("quiz");
@@ -144,7 +148,6 @@
           `;
         });
 
-        // Display results
         resultContainer.innerHTML = `
           <div class='alert alert-info'>
             <strong>You scored ${score} out of ${questions.length}.</strong><br>
@@ -157,23 +160,33 @@
         `;
 
         // Send to Google Sheets
+        sendSubmission(userId, score, questions.length, userAnswers);
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }
+
+      function sendSubmission(user, score, total, answers) {
         fetch(submissionURL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
-          body: JSON.stringify({
-            user: userId,
-            score: score,
-            total: questions.length,
-            answers: userAnswers
-          })
+          body: JSON.stringify({ user, score, total, answers })
         })
-        .then(response => response.text())
-        .then(data => console.log("Submitted:", data))
-        .catch(err => console.error("Error submitting quiz:", err));
+        .then(res => res.text())
+        .then(txt => console.log("Submitted:", txt))
+        .catch(err => console.error("Submission error:", err));
+      }
 
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      function sendTestSubmission() {
+        const testUser = "TestUser-123";
+        const testData = {
+          user: testUser,
+          score: 4,
+          total: 6,
+          answers: ["Yes", "No", "No", "Yes", "No", "No"]
+        };
+        sendSubmission(testData.user, testData.score, testData.total, testData.answers);
+        alert("Test data sent as " + testUser);
       }
 
       buildQuiz();
