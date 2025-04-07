@@ -70,34 +70,37 @@
       }
 
       function buildQuiz() {
-        const output = questions.map((q, index) => {
-          const { context, question, clue } = extractContextAndQuestion(q.scenario);
-          const clueHTML = clue ? `<div id="clue${index}" class="clue-box">${clue}</div>
-            <button class='btn btn-warning btn-sm mt-2' onclick="document.getElementById('clue${index}').style.display='block'; this.style.display='none'">🔍 Show Clue</button>` : "";
+  const output = questions.map((q, index) => {
+    const clueHTML = q.redflags ? `<div id="clue${index}" class="clue-box">${q.redflags}</div>
+      <button class='btn btn-warning btn-sm mt-2' onclick="document.getElementById('clue${index}').style.display='block'; this.style.display='none'">🔍 Show Clue</button>` : "";
 
-          return `
-            <div class="card mb-3 p-3 ${index !== 0 ? 'hidden' : ''}" id="question${index}">
-              <div class="card-body">
-                <div class="question-number">Question ${index + 1} of ${questions.length}</div>
-                <h5 class="card-title">Scenario ${index + 1}</h5>
-                <div class="context-box"><pre>${context}</pre></div>
-                <div class="question-box">
-                  <p><strong>${question}</strong></p>
-                  <div class="btn-group btn-group-toggle" data-bs-toggle="buttons">
-                    <input type="radio" class="btn-check" name="q${index}" id="yes${index}" value="Yes">
-                    <label class="btn btn-outline-primary" for="yes${index}" onclick="checkAnswer(${index}, 'Yes')">Yes</label>
+    return `
+      <div class="card mb-3 p-3 ${index !== 0 ? 'hidden' : ''}" id="question${index}">
+        <div class="card-body">
+          <div class="question-number">Question ${index + 1} of ${questions.length}</div>
+          <h5 class="card-title">Scenario ${index + 1}</h5>
+          <div class="context-box">
+            <strong>Scenario:</strong> <pre>${q.scenario}</pre>
+            <strong>Process:</strong> <pre>${q.process}</pre>
+            <strong>Result:</strong> <pre>${q.result}</pre>
+          </div>
+          <div class="question-box">
+            <p><strong>${q.question}</strong></p>
+            <div class="btn-group btn-group-toggle" data-bs-toggle="buttons">
+              <input type="radio" class="btn-check" name="q${index}" id="yes${index}" value="Yes">
+              <label class="btn btn-outline-primary" for="yes${index}" onclick="checkAnswer(${index}, 'Yes')">Yes</label>
 
-                    <input type="radio" class="btn-check" name="q${index}" id="no${index}" value="No">
-                    <label class="btn btn-outline-primary" for="no${index}" onclick="checkAnswer(${index}, 'No')">No</label>
-                  </div>
-                </div>
-                ${clueHTML}
-                <div id="feedback${index}" class="mt-3"></div>
-              </div>
+              <input type="radio" class="btn-check" name="q${index}" id="no${index}" value="No">
+              <label class="btn btn-outline-primary" for="no${index}" onclick="checkAnswer(${index}, 'No')">No</label>
             </div>
-          `;
-        });
-        quizContainer.innerHTML = output.join("");
+          </div>
+          ${clueHTML}
+          <div id="feedback${index}" class="mt-3"></div>
+        </div>
+      </div>
+    `;
+  });
+  quizContainer.innerHTML = output.join("");
       }
 
       function checkAnswer(index, userAnswer) {
