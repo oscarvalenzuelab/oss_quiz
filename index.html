@@ -25,7 +25,7 @@
     <h1 class="mb-3 text-center">Open Source Compliance Quiz</h1>
     <p class="text-center mb-4">A quick check of your SBOM and OSS compliance instincts.</p>
     <div id="user-display"></div>
-
+<div id="quiz-wrapper">
     <div id="quiz"></div>
 
     <div class="d-flex justify-content-between mt-4">
@@ -33,7 +33,7 @@
       <button id="nextBtn" class="btn btn-primary">Next</button>
       <button id="submitBtn" class="btn btn-success d-none">Submit</button>
     </div>
-
+</div>
     <div id="result" class="mt-5"></div>
 
     <script src="questions.js"></script>
@@ -126,6 +126,7 @@
       }
 
       function showResults() {
+		document.getElementById("quiz-wrapper").classList.add("hidden");
         if (submitted) return;
         submitted = true;
         submitBtn.disabled = true;
