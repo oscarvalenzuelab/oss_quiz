@@ -6,31 +6,17 @@
   <title>SBOM Quiz</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
-    .card {
-      transition: transform 0.3s ease-in-out;
-    }
-    .hidden {
-      display: none;
-    }
+    .card { transition: transform 0.3s ease-in-out; }
+    .hidden { display: none; }
     .context-box, .question-box {
       background-color: #f8f9fa;
       border-radius: 0.5rem;
       padding: 1rem;
       margin-bottom: 1rem;
     }
-    .btn-group-toggle .btn {
-      min-width: 100px;
-    }
-    .question-number {
-      font-size: 0.9rem;
-      color: #6c757d;
-      margin-bottom: 0.5rem;
-    }
-    .learn-box {
-      margin-top: 0.5rem;
-      font-size: 0.95rem;
-      color: #555;
-    }
+    .btn-group-toggle .btn { min-width: 100px; }
+    .question-number { font-size: 0.9rem; color: #6c757d; margin-bottom: 0.5rem; }
+    .learn-box { margin-top: 0.5rem; font-size: 0.95rem; color: #555; }
   </style>
 </head>
 <body class="bg-light">
@@ -61,8 +47,8 @@
       let currentQuestion = 0;
       const userAnswers = new Array(questions.length).fill(null);
 
-      // Replace with your Google Apps Script Web App URL
-      const submissionURL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID_HERE/exec";
+      // Replace this with your real deployed Apps Script Web App URL
+      const submissionURL = "https://script.google.com/macros/s/AKfycby-QHZb8jnOuhABIu9CWLZDxWdRi2bY15X1a0pySb4vXimMd9zAU36T2oBeSwBi5tPQ/exec";
 
       function generateUserId() {
         return "User-" + Math.random().toString(36).substr(2, 6);
@@ -86,9 +72,7 @@
               <div class="card-body">
                 <div class="question-number">Question ${index + 1} of ${questions.length}</div>
                 <h5 class="card-title">Scenario ${index + 1}</h5>
-                <div class="context-box">
-                  <pre>${context}</pre>
-                </div>
+                <div class="context-box"><pre>${context}</pre></div>
                 <div class="question-box">
                   <p><strong>${question}</strong></p>
                   <div class="btn-group btn-group-toggle" data-bs-toggle="buttons">
@@ -111,15 +95,12 @@
         const question = questions[index];
         const feedbackEl = document.getElementById(`feedback${index}`);
         const inputs = document.querySelectorAll(`input[name=q${index}]`);
-
         inputs.forEach(input => input.disabled = true);
         userAnswers[index] = userAnswer;
-
-        if (userAnswer === question.answer) {
-          feedbackEl.innerHTML = `<div class='text-success'>Correct: ${question.feedback}</div>`;
-        } else {
-          feedbackEl.innerHTML = `<div class='text-danger'>Incorrect: ${question.feedback}</div>`;
-        }
+        feedbackEl.innerHTML =
+          userAnswer === question.answer
+            ? `<div class='text-success'>Correct: ${question.feedback}</div>`
+            : `<div class='text-danger'>Incorrect: ${question.feedback}</div>`;
       }
 
       function showQuestion(index) {
@@ -135,11 +116,8 @@
       function showResults() {
         let score = 0;
         let notes = "";
-
         questions.forEach((q, index) => {
-          if (userAnswers[index] === q.answer) {
-            score++;
-          }
+          if (userAnswers[index] === q.answer) score++;
           notes += `
             <div class='mb-3'>
               <strong>Question ${index + 1}:</strong> ${userAnswers[index] === q.answer ? "✅ Correct" : "❌ Incorrect"}<br>
@@ -159,40 +137,33 @@
           </div>
         `;
 
-        // Send to Google Sheets
         sendSubmission(userId, score, questions.length, userAnswers);
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       }
 
       function sendSubmission(user, score, total, answers) {
-		  fetch(submissionURL, {
-		    method: "POST",
-		    mode: "no-cors", // <-- bypass CORS for Google Apps Script
-		    headers: {
-		      "Content-Type": "application/json"
-		    },
-		    body: JSON.stringify({ user, score, total, answers })
-		  });
-		  console.log("Submitted to Google Apps Script (CORS bypass mode)");
-		},
+        fetch(submissionURL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
           body: JSON.stringify({ user, score, total, answers })
-        })
-        .then(res => res.text())
-        .then(txt => console.log("Submitted:", txt))
-        .catch(err => console.error("Submission error:", err));
+        });
+        console.log("Submitted to Google Apps Script (CORS bypass mode)");
       }
 
-	  function sendSubmission(user, score, total, answers) {
-	    fetch(submissionURL, {
-	      method: "POST",
-	      mode: "no-cors",
-	      headers: {
-	        "Content-Type": "application/json"
-	      },
-	      body: JSON.stringify({ user, score, total, answers })
-	    });
-	    console.log("Submitted to Google Apps Script (CORS bypass mode)");
-	  }
+      function sendTestSubmission() {
+        const testUser = "TestUser-123";
+        const testData = {
+          user: testUser,
+          score: 4,
+          total: 6,
+          answers: ["Yes", "No", "No", "Yes", "No", "No"]
+        };
+        sendSubmission(testData.user, testData.score, testData.total, testData.answers);
+        alert("Test data sent as " + testUser);
+      }
 
       buildQuiz();
       showQuestion(currentQuestion);
