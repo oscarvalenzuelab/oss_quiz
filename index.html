@@ -63,8 +63,7 @@
         const questionIndex = lines.findIndex(line => line.trim().endsWith("Is this correct?"));
         const clueIndex = lines.findIndex(line => line.toLowerCase().includes("red flag"));
         const contextEnd = clueIndex >= 0 ? clueIndex : questionIndex;
-        const context = lines.slice(0, contextEnd).join("
-");
+        const context = lines.slice(0, contextEnd).join("");
         const question = lines[questionIndex];
         const clueIndex = lines.findIndex(line => line.toLowerCase().includes("red flag"));
         const clue = clueIndex >= 0 ? lines.slice(clueIndex).join("\n") : null;
