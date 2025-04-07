@@ -65,6 +65,7 @@
         const contextEnd = clueIndex >= 0 ? clueIndex : questionIndex;
         const context = lines.slice(0, contextEnd).join("");
         const clue = clueIndex >= 0 ? lines.slice(clueIndex).join("\n") : null;
+        const question = lines[questionIndex];
         return { context, question, clue };
       }
 
