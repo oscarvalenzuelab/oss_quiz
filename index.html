@@ -17,7 +17,7 @@
     .btn-group-toggle .btn { min-width: 100px; }
     .question-number { font-size: 0.9rem; color: #6c757d; margin-bottom: 0.5rem; }
     .learn-box { margin-top: 0.5rem; font-size: 0.95rem; color: #555; }
-    #user-display { font-weight: bold; color: #0d6efd; font-size: 1rem; text-align: center; }
+    .clue-box { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 0.75rem; margin-top: 1rem; display: none; }
   </style>
 </head>
 <body class="bg-light">
@@ -63,12 +63,17 @@
         const questionIndex = lines.findIndex(line => line.trim().endsWith("Is this correct?"));
         const context = lines.slice(0, questionIndex).join("\n");
         const question = lines[questionIndex];
-        return { context, question };
+        const clueIndex = lines.findIndex(line => line.toLowerCase().includes("red flag"));
+        const clue = clueIndex >= 0 ? lines.slice(clueIndex).join("\n") : null;
+        return { context, question, clue };
       }
 
       function buildQuiz() {
         const output = questions.map((q, index) => {
-          const { context, question } = extractContextAndQuestion(q.scenario);
+          const { context, question, clue } = extractContextAndQuestion(q.scenario);
+          const clueHTML = clue ? `<div id="clue${index}" class="clue-box">${clue}</div>
+            <button class='btn btn-warning btn-sm mt-2' onclick="document.getElementById('clue${index}').style.display='block'; this.style.display='none'">🔍 Show Clue</button>` : "";
+
           return `
             <div class="card mb-3 p-3 ${index !== 0 ? 'hidden' : ''}" id="question${index}">
               <div class="card-body">
@@ -85,6 +90,7 @@
                     <label class="btn btn-outline-primary" for="no${index}" onclick="checkAnswer(${index}, 'No')">No</label>
                   </div>
                 </div>
+                ${clueHTML}
                 <div id="feedback${index}" class="mt-3"></div>
               </div>
             </div>
