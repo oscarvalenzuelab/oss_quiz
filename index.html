@@ -182,17 +182,17 @@
         .catch(err => console.error("Submission error:", err));
       }
 
-      function sendTestSubmission() {
-        const testUser = "TestUser-123";
-        const testData = {
-          user: testUser,
-          score: 4,
-          total: 6,
-          answers: ["Yes", "No", "No", "Yes", "No", "No"]
-        };
-        sendSubmission(testData.user, testData.score, testData.total, testData.answers);
-        alert("Test data sent as " + testUser);
-      }
+	  function sendSubmission(user, score, total, answers) {
+	    fetch(submissionURL, {
+	      method: "POST",
+	      mode: "no-cors",
+	      headers: {
+	        "Content-Type": "application/json"
+	      },
+	      body: JSON.stringify({ user, score, total, answers })
+	    });
+	    console.log("Submitted to Google Apps Script (CORS bypass mode)");
+	  }
 
       buildQuiz();
       showQuestion(currentQuestion);
