@@ -1,47 +1,56 @@
 const questions = [
   {
-    scenario: "A supplier provided a CycloneDX SBOM with 120 components and license fields for only 50 of them.",
-    process: "The team ran the SBOM through ossbomer-schema for format validation and then used ossbomer-conformance to check compliance.",
-    result: "The schema passed, but the conformance check flagged the missing license fields.",
-    redflags: "Only 50 of 120 components had license info. CRA and NTIA require license declarations.",
-    question: "Is this SBOM valid for OSS compliance?",
+    scenario: "Linux-based Router",
+    process: "1. Build OS (production) image (2.4 GB)\n2. Upload image into the SCA tool\n3. Execute scan\n4. Produce SBOM\n5. Generate OSS notices\n6. Verify CVEs and licenses",
+    result: "- Tool executed scan without errors\n- Valid SBOM for 4 OSS packages\n- All licenses were permissive\n- Legal notices generated",
+    redflags: "- Only 4 packages in a 2.4 GB Linux image\n- Licenses detected all permissive (suspicious)\n- Multi-format scan support unclear",
+    question: "Is this correct?",
     answer: "No",
-    feedback: "OSS compliance requires every component to have licensing information. Missing data makes the SBOM incomplete."
+    feedback: "Only 4 OSS packages in a full Linux image is unrealistic. Licensing coverage is likely incomplete."
   },
   {
-    scenario: "An SPDX JSON SBOM includes all required fields and also contains SHA-1 and SHA-256 hashes for each component.",
-    process: "The SBOM was analyzed with ossbomer-conformance and ossbomer-oslc.",
-    result: "All checks passed successfully.",
-    redflags: "None",
-    question: "Does this SBOM meet compliance expectations?",
-    answer: "Yes",
-    feedback: "Providing full SPDX fields and secure hashes ensures conformance and traceability."
+    scenario: "Java Web Platform (Maven)",
+    process: "1. Build software and generate SBOM\n2. Import SBOM into SCA tool\n3. Generate CVE and license reports\n4. If licenses permissive, proceed. Else, ask Legal",
+    result: "- Valid SBOM for 78 Maven components\n- No problematic licenses",
+    redflags: "- SBOM had no license info; SCA inferred them\n- Inference without artifact verification is risky\n- No validation close to source",
+    question: "Is this correct?",
+    answer: "No",
+    feedback: "Licenses were inferred, which can be incorrect. There was no verification close to the source."
   },
   {
-    scenario: "A developer manually curated an SBOM in SPDX format but used custom field names like 'pkg_license' and 'code_origin'.",
-    process: "The SBOM was passed through schema validation.",
-    result: "The validation failed due to unrecognized fields.",
-    redflags: "Custom fields not defined in the SPDX spec.",
-    question: "Is this a valid SPDX SBOM?",
+    scenario: "PHP Web Platform using PEAR",
+    process: "1. Tarball code into a folder\n2. Send to SCA vendor for scan\n3. Verify CVEs and licenses",
+    result: "- 96 PHP PEAR components detected\n- 18 WordPress-related packages\n- All marked as PHP PEAR licensed",
+    redflags: "- GPL/AGPL licenses not detected\n- Some packages were commercial\n- PHP code can't be self-attributed",
+    question: "Is this correct?",
     answer: "No",
-    feedback: "SPDX schema requires standard field names. Custom fields break schema and tooling compatibility."
+    feedback: "Important licenses were missed, including GPL/AGPL. PHP can't be self-attributed."
   },
   {
-    scenario: "An SBOM in CycloneDX format lists PURLs for each component but no version numbers.",
-    process: "ossbomer-conformance was run to verify completeness.",
-    result: "The report highlighted missing version fields.",
-    redflags: "PURLs without version numbers reduce component traceability.",
-    question: "Is this SBOM acceptable for accurate dependency tracking?",
+    scenario: "SoC Vendor SDK (SBOM Technical)",
+    process: "1. Download SDK copy\n2. Import SBOM into SCA tool\n3. Verify CVEs and licenses",
+    result: "- Valid SBOM for 118 components\n- No problematic licenses",
+    redflags: "- SBOM merged from multiple tools\n- Kernel binaries missing\n- Not all SDK files were included",
+    question: "Is this correct?",
     answer: "No",
-    feedback: "Version info is crucial to track exact components. Missing versions can obscure vulnerabilities."
+    feedback: "Merged SBOMs often miss important components. Kernel binaries were not accounted for."
   },
   {
-    scenario: "A security team receives an SBOM for audit with 100% license coverage but all licenses marked as 'OTHER'.",
-    process: "ossbomer-oslc compared licenses against known SPDX identifiers.",
-    result: "The audit flagged all licenses as non-standard.",
-    redflags: "'OTHER' used as a placeholder instead of SPDX IDs.",
-    question: "Is this a compliant license declaration?",
+    scenario: "SoC Vendor SDK (Technical Validation)",
+    process: "1. Upload SDK tarball into SCA tool\n2. Execute scan\n3. Verify results",
+    result: "- Valid scan report for 87 components",
+    redflags: "- Binary components not recognized were omitted",
+    question: "Is this correct?",
     answer: "No",
-    feedback: "Valid SPDX licenses must be used to ensure automated tooling and audits are accurate."
+    feedback: "Unrecognized binaries were skipped — this results in an incomplete scan report."
+  },
+  {
+    scenario: "iOS Multimedia App",
+    process: "1. Build a copy of the iOS app\n2. Upload to SCA tool\n3. Execute scan\n4. Produce report\n5. Verify CVEs and licenses",
+    result: "- Valid report for 53 components\n- LGPL-2.1 component dynamically linked\n- Tarball generated for LGPL component",
+    redflags: "- Dynamic linking with LGPL not supported on iOS\n- LGPL not fully compatible with App Store\n- Codecs expected, but none reported",
+    question: "Is this correct?",
+    answer: "No",
+    feedback: "LGPL is problematic on iOS and codecs were missing. This app has compliance issues."
   }
 ];
