@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SBOM Quiz</title>
+  <title>Open Source Compliance Quiz</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     .card { transition: transform 0.3s ease-in-out; }
@@ -17,11 +17,15 @@
     .btn-group-toggle .btn { min-width: 100px; }
     .question-number { font-size: 0.9rem; color: #6c757d; margin-bottom: 0.5rem; }
     .learn-box { margin-top: 0.5rem; font-size: 0.95rem; color: #555; }
+    #user-display { font-weight: bold; color: #0d6efd; font-size: 1rem; text-align: center; }
   </style>
 </head>
 <body class="bg-light">
   <div class="container py-5">
-    <h1 class="mb-4 text-center">SBOM Quiz</h1>
+    <h1 class="mb-3 text-center">Open Source Compliance Quiz</h1>
+    <p class="text-center mb-4">A quick check of your SBOM and OSS compliance instincts.</p>
+    <div id="user-display"></div>
+
     <div id="quiz"></div>
 
     <div class="d-flex justify-content-between mt-4">
@@ -32,10 +36,6 @@
 
     <div id="result" class="mt-5"></div>
 
-    <div class="text-center mt-4">
-      <button class="btn btn-warning" onclick="sendTestSubmission()">📡 Send Test Data</button>
-    </div>
-
     <script src="questions.js"></script>
     <script>
       const quizContainer = document.getElementById("quiz");
@@ -43,17 +43,20 @@
       const prevBtn = document.getElementById("prevBtn");
       const nextBtn = document.getElementById("nextBtn");
       const submitBtn = document.getElementById("submitBtn");
+      const userDisplay = document.getElementById("user-display");
 
       let currentQuestion = 0;
+      let submitted = false;
       const userAnswers = new Array(questions.length).fill(null);
 
-      // Replace this with your real deployed Apps Script Web App URL
       const submissionURL = "https://script.google.com/macros/s/AKfycbwtZsZYD83ZqowYy6GhJSRXJnjfrapirFnKDOEzO_rQI5rQo_ceL9X6YGUGutGAiU3S/exec";
 
       function generateUserId() {
         return "User-" + Math.random().toString(36).substr(2, 6);
       }
+
       const userId = generateUserId();
+      userDisplay.innerHTML = `Your ID: <code>${userId}</code>`;
 
       function extractContextAndQuestion(fullText) {
         const lines = fullText.trim().split("\n");
@@ -113,8 +116,13 @@
       }
 
       function showResults() {
+        if (submitted) return;
+        submitted = true;
+        submitBtn.disabled = true;
+
         let score = 0;
         let notes = "";
+
         questions.forEach((q, index) => {
           if (userAnswers[index] === q.answer) score++;
           notes += `
@@ -128,7 +136,7 @@
         resultContainer.innerHTML = `
           <div class='alert alert-info'>
             <strong>You scored ${score} out of ${questions.length}.</strong><br>
-            <em>User ID:</em> ${userId}
+            <strong>Your User ID:</strong> <code>${userId}</code>
           </div>
           <div class='card card-body mt-3'>
             <h5>Learning Notes:</h5>
@@ -141,7 +149,6 @@
       }
 
       function sendSubmission(user, score, total, answers) {
-		  alert(user, score, total, answers)
         fetch(submissionURL, {
           method: "POST",
           mode: "no-cors",
@@ -151,18 +158,6 @@
           body: JSON.stringify({ user, score, total, answers })
         });
         console.log("Submitted to Google Apps Script (CORS bypass mode)");
-      }
-
-      function sendTestSubmission() {
-        const testUser = "TestUser-123";
-        const testData = {
-          user: testUser,
-          score: 4,
-          total: 6,
-          answers: ["Yes", "No", "No", "Yes", "No", "No"]
-        };
-        sendSubmission(testData.user, testData.score, testData.total, testData.answers);
-        alert("Test data sent as " + testUser);
       }
 
       buildQuiz();
