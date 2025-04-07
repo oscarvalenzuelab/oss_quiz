@@ -61,7 +61,10 @@
       function extractContextAndQuestion(fullText) {
         const lines = fullText.trim().split("\n");
         const questionIndex = lines.findIndex(line => line.trim().endsWith("Is this correct?"));
-        const context = lines.slice(0, questionIndex).join("\n");
+        const clueIndex = lines.findIndex(line => line.toLowerCase().includes("red flag"));
+        const contextEnd = clueIndex >= 0 ? clueIndex : questionIndex;
+        const context = lines.slice(0, contextEnd).join("
+");
         const question = lines[questionIndex];
         const clueIndex = lines.findIndex(line => line.toLowerCase().includes("red flag"));
         const clue = clueIndex >= 0 ? lines.slice(clueIndex).join("\n") : null;
@@ -143,7 +146,6 @@
           <div class='alert alert-info'>
             <strong>You scored ${score} out of ${questions.length}.</strong><br>
             <strong>Your User ID:</strong> <code>${userId}</code>
-			<p><a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vTh2X49pat1PMoSK-Cwbmsf2SqA81rJ9sK6ywjhbwvr0b45PZueQXGhrVVYe01AKs2X_iMdmUKV3Not/pubchart?oid=1621451594&format=interactive" target="_blank">Group Results</a></p>
           </div>
           <div class='card card-body mt-3'>
             <h5>Learning Notes:</h5>
