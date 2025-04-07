@@ -165,16 +165,16 @@
       }
 
       function sendSubmission(user, score, total, answers) {
-  fetch(submissionURL, {
-    method: "POST",
-    mode: "no-cors", // <-- bypass CORS for Google Apps Script
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ user, score, total, answers })
-  });
-  console.log("Submitted to Google Apps Script (CORS bypass mode)");
-},
+		  fetch(submissionURL, {
+		    method: "POST",
+		    mode: "no-cors", // <-- bypass CORS for Google Apps Script
+		    headers: {
+		      "Content-Type": "application/json"
+		    },
+		    body: JSON.stringify({ user, score, total, answers })
+		  });
+		  console.log("Submitted to Google Apps Script (CORS bypass mode)");
+		},
           body: JSON.stringify({ user, score, total, answers })
         })
         .then(res => res.text())
